@@ -44,7 +44,7 @@
       "env": {
         "POSTGRES_DB": "{{setting.database}}",
         "POSTGRES_USER": "{{setting.user}}",
-        "PGDATA": "/var/lib/postgresql/data/pgdata",
+        "PGDATA": "/var/lib/postgresql/data",
         "POSTGRES_INITDB_ARGS": "--auth-host=scram-sha-256 --data-checksums"
       },
       "secrets": [
