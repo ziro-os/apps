@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "name": "umami",
+  "description": "Umami privacy-friendly web analytics; needs PostgreSQL (stack umami)",
+  "default": "3",
+  "versions": {
+    "3": {
+      "images": {
+        "web": "ghcr.io/umami-software/umami:3.4.0@sha256:85909afc45bdcda1917394594a087421fdbb05610fded0fa9f6fb861abb2f367"
+      }
+    }
+  },
+  "secrets": {
+    "APP_SECRET": "alnum:48"
+  },
+  "components": [
+    {
+      "name": "web",
+      "port": 3000,
+      "secrets": [
+        "APP_SECRET"
+      ],
+      "health": [
+        "wget",
+        "-q",
+        "-O",
+        "/dev/null",
+        "http://127.0.0.1:3000/api/heartbeat"
+      ],
+      "resources": {
+        "memory": "512Mi"
+      }
+    }
+  ],
+  "outputs": {
+    "url": "http://{{host}}:{{port}}/",
+    "host": "{{host}}",
+    "port": "{{port}}"
+  },
+  "notes": "Deploy it with its database: ziroctl stack up umami. First login: admin / umami; change the password right away."
+}

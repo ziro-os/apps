@@ -17,7 +17,7 @@ concurrency:
 
 env:
   # ziroctl that builds and signs the catalog, pinned to a reviewed commit of ziro-os/ziro-os.
-  ZIROCTL_REF: c51b4cb6288ef35efbd82e3bae8624374f3e4fde
+  ZIROCTL_REF: 765a83961a6834f586a72ac57c20494962603496
 
 jobs:
   build:
@@ -38,6 +38,8 @@ jobs:
           cache-dependency-path: .ziro-os/tools/ziroctl/go.sum
       - name: Build ziroctl
         run: cd .ziro-os/tools/ziroctl && CGO_ENABLED=0 go build -o "$RUNNER_TEMP/ziroctl" .
+      - name: Lint strictly (health checks, privilege drops)
+        run: '"$RUNNER_TEMP/ziroctl" dev validate --strict .'
       - name: Build catalog (validates every definition; images must be pinned by digest)
         run: |
           "$RUNNER_TEMP/ziroctl" catalog build . --repo ziro-apps --kind app --out public

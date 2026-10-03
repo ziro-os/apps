@@ -1,0 +1,27 @@
+{
+  "stack": "wordpress-mariadb",
+  "version": 1,
+  "description": "WordPress with MariaDB 11.8 on 127.0.0.1:8080",
+  "apps": {
+    "db": {
+      "app": "mariadb:11.8",
+      "set": {
+        "database": "wordpress",
+        "user": "wordpress"
+      }
+    },
+    "web": {
+      "app": "wordpress:7",
+      "publish": 8080,
+      "depends_on": [
+        "db"
+      ],
+      "links": {
+        "WORDPRESS_DB_HOST": "db.host",
+        "WORDPRESS_DB_USER": "db.user",
+        "WORDPRESS_DB_PASSWORD": "db.password",
+        "WORDPRESS_DB_NAME": "db.database"
+      }
+    }
+  }
+}

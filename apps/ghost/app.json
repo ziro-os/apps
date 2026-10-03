@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "name": "ghost",
+  "description": "Ghost publishing platform (Node) with persistent content; needs a MySQL 8 database",
+  "default": "6",
+  "versions": {
+    "6": {
+      "images": {
+        "web": "docker.io/library/ghost:6.67.0-alpine@sha256:1f7ecf094d54363014636c3540dbe9c368394504abaa283914e4fcf8d699f331"
+      }
+    }
+  },
+  "settings": [
+    {
+      "name": "url",
+      "description": "public URL the app links to (set it to the --expose hostname)",
+      "default": "http://localhost:2368",
+      "pattern": "^https?://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9._~/-]*)?$"
+    }
+  ],
+  "components": [
+    {
+      "name": "web",
+      "port": 2368,
+      "env": {
+        "url": "{{setting.url}}",
+        "database__client": "mysql",
+        "NODE_ENV": "production"
+      },
+      "data": [
+        "/var/lib/ghost/content"
+      ],
+      "health": [
+        "wget",
+        "-q",
+        "-O",
+        "/dev/null",
+        "http://127.0.0.1:2368/ghost/api/admin/site/"
+      ],
+      "resources": {
+        "memory": "768Mi"
+      }
+    }
+  ],
+  "outputs": {
+    "url": "{{setting.url}}",
+    "admin": "{{setting.url}}/ghost/",
+    "host": "{{host}}",
+    "port": "{{port}}"
+  },
+  "notes": "Deploy it with its database: ziroctl stack up ghost. Set url to the public address (--set url=https://blog.example.com)."
+}
