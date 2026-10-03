@@ -38,7 +38,7 @@ jobs:
           cache-dependency-path: .ziro-os/tools/ziroctl/go.sum
       - name: Build ziroctl
         run: cd .ziro-os/tools/ziroctl && CGO_ENABLED=0 go build -o "$RUNNER_TEMP/ziroctl" .
-      - name: Lint (strict: health checks, privilege drops)
+      - name: Lint strictly (health checks, privilege drops)
         run: '"$RUNNER_TEMP/ziroctl" dev validate --strict .'
       - name: Build catalog (validates every definition; images must be pinned by digest)
         run: |
