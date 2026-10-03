@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "name": "mariadb",
+  "description": "MariaDB (LTS) with generated root and app passwords and persistent data",
+  "default": "11.8",
+  "versions": {
+    "11.8": {
+      "images": {
+        "db": "docker.io/library/mariadb:11.8.9@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15"
+      }
+    },
+    "11.4": {
+      "images": {
+        "db": "docker.io/library/mariadb:11.4.13@sha256:1292844148b311e4ed4300022a996d39083f415a963e970cf47cad1b3b18e3a6"
+      }
+    }
+  },
+  "settings": [
+    {
+      "name": "database",
+      "description": "database created on first start",
+      "default": "app",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,63}$"
+    },
+    {
+      "name": "user",
+      "description": "user with all privileges on that database",
+      "default": "app",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,31}$"
+    }
+  ],
+  "secrets": {
+    "MARIADB_ROOT_PASSWORD": "alnum:32",
+    "MARIADB_PASSWORD": "alnum:32"
+  },
+  "components": [
+    {
+      "name": "db",
+      "port": 3306,
+      "env": {
+        "MARIADB_DATABASE": "{{setting.database}}",
+        "MARIADB_USER": "{{setting.user}}",
+        "MARIADB_AUTO_UPGRADE": "1"
+      },
+      "secrets": [
+        "MARIADB_ROOT_PASSWORD",
+        "MARIADB_PASSWORD"
+      ],
+      "data": [
+        "/var/lib/mysql"
+      ],
+      "health": [
+        "healthcheck.sh",
+        "--connect",
+        "--innodb_initialized"
+      ],
+      "resources": {
+        "memory": "1Gi"
+      }
+    }
+  ],
+  "outputs": {
+    "url": "mysql://{{setting.user}}:{{secret.MARIADB_PASSWORD}}@{{host}}:{{port}}/{{setting.database}}",
+    "user": "{{setting.user}}",
+    "password": "{{secret.MARIADB_PASSWORD}}",
+    "root_password": "{{secret.MARIADB_ROOT_PASSWORD}}",
+    "database": "{{setting.database}}",
+    "host": "{{host}}",
+    "port": "{{port}}"
+  }
+}

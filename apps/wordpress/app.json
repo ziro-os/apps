@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "name": "wordpress",
+  "description": "WordPress on Apache (PHP 8.4) with persistent uploads, themes and plugins; needs a MySQL or MariaDB database",
+  "default": "7",
+  "versions": {
+    "7": {
+      "images": {
+        "web": "docker.io/library/wordpress:7.1.2-php8.4-apache@sha256:85ee71a393b0f3f7a45b2e293978f1c9ab94fb421161080e54f911eeb2501bdc"
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "web",
+      "port": 80,
+      "data": [
+        "/var/www/html"
+      ],
+      "health": [
+        "curl",
+        "-fsS",
+        "-o",
+        "/dev/null",
+        "http://127.0.0.1/wp-login.php"
+      ],
+      "resources": {
+        "memory": "512Mi"
+      }
+    }
+  ],
+  "outputs": {
+    "url": "http://{{host}}:{{port}}/",
+    "host": "{{host}}",
+    "port": "{{port}}"
+  },
+  "notes": "Deploy it with its database: ziroctl stack up wordpress (MySQL) or wordpress-mariadb. The database settings arrive as links (WORDPRESS_DB_HOST, _USER, _PASSWORD, _NAME)."
+}

@@ -1,0 +1,27 @@
+{
+  "stack": "wordpress",
+  "version": 1,
+  "description": "WordPress with MySQL 8.4: the blog on 127.0.0.1:8080 (expose it with ziroctl gateway expose)",
+  "apps": {
+    "db": {
+      "app": "mysql:8.4",
+      "set": {
+        "database": "wordpress",
+        "user": "wordpress"
+      }
+    },
+    "web": {
+      "app": "wordpress:7",
+      "publish": 8080,
+      "depends_on": [
+        "db"
+      ],
+      "links": {
+        "WORDPRESS_DB_HOST": "db.host",
+        "WORDPRESS_DB_USER": "db.user",
+        "WORDPRESS_DB_PASSWORD": "db.password",
+        "WORDPRESS_DB_NAME": "db.database"
+      }
+    }
+  }
+}

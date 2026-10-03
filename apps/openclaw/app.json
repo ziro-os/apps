@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "name": "openclaw",
+  "description": "OpenClaw personal AI assistant gateway, with a generated gateway token and persistent state",
+  "default": "2026.9",
+  "versions": {
+    "2026.9": {
+      "images": {
+        "gateway": "ghcr.io/openclaw/openclaw:2026.9.8@sha256:d0ded1dd76939b2bf4d67ef2d13247b8b160aa5666331d4a0b0e58811182cbb8"
+      }
+    }
+  },
+  "secrets": {
+    "OPENCLAW_GATEWAY_TOKEN": "alnum:48",
+    "ANTHROPIC_API_KEY": "input?",
+    "OPENAI_API_KEY": "input?"
+  },
+  "components": [
+    {
+      "name": "gateway",
+      "port": 18789,
+      "env": {
+        "HOME": "/home/node",
+        "OPENCLAW_HOME": "/home/node",
+        "OPENCLAW_STATE_DIR": "/home/node/.openclaw",
+        "OPENCLAW_CONFIG_PATH": "/home/node/.openclaw/openclaw.json",
+        "OPENCLAW_CONFIG_DIR": "/home/node/.openclaw",
+        "OPENCLAW_WORKSPACE_DIR": "/home/node/.openclaw/workspace",
+        "OPENCLAW_GATEWAY_PORT": "18789",
+        "OPENCLAW_DISABLE_BONJOUR": "1"
+      },
+      "secrets": [
+        "OPENCLAW_GATEWAY_TOKEN",
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY"
+      ],
+      "data": [
+        "/home/node/.openclaw"
+      ],
+      "data_uid": 1000,
+      "args": [
+        "node",
+        "dist/index.js",
+        "gateway",
+        "--bind",
+        "lan",
+        "--port",
+        "18789"
+      ],
+      "health": [
+        "node",
+        "dist/docker-healthcheck.js"
+      ],
+      "resources": {
+        "memory": "2Gi"
+      }
+    }
+  ],
+  "outputs": {
+    "url": "http://{{host}}:{{port}}/",
+    "token": "{{secret.OPENCLAW_GATEWAY_TOKEN}}",
+    "host": "{{host}}",
+    "port": "{{port}}"
+  },
+  "notes": "Give a model provider key at deploy: --secret ANTHROPIC_API_KEY=@key.txt (or OPENAI_API_KEY). The gateway token is in ziroctl apps credentials openclaw."
+}

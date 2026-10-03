@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "name": "n8n",
+  "description": "n8n workflow automation with a persistent encryption key; uses PostgreSQL when linked (stack n8n)",
+  "default": "2",
+  "versions": {
+    "2": {
+      "images": {
+        "web": "docker.io/n8nio/n8n:2.41.6@sha256:87e0bab2c93192e8dd885ff7b0697c22a1bd97489568a8c67cc140fd7dbb342d"
+      }
+    }
+  },
+  "settings": [
+    {
+      "name": "url",
+      "description": "public URL the app links to (set it to the --expose hostname)",
+      "default": "http://localhost:5678/",
+      "pattern": "^https?://[A-Za-z0-9.-]+(:[0-9]{1,5})?(/[A-Za-z0-9._~/-]*)?$"
+    },
+    {
+      "name": "db",
+      "description": "database: sqlite (in the data dir) or postgresdb (linked; stack n8n)",
+      "default": "sqlite",
+      "pattern": "^(sqlite|postgresdb)$"
+    }
+  ],
+  "secrets": {
+    "N8N_ENCRYPTION_KEY": "alnum:48"
+  },
+  "components": [
+    {
+      "name": "web",
+      "port": 5678,
+      "env": {
+        "WEBHOOK_URL": "{{setting.url}}",
+        "N8N_EDITOR_BASE_URL": "{{setting.url}}",
+        "N8N_DIAGNOSTICS_ENABLED": "false",
+        "N8N_RUNNERS_ENABLED": "true",
+        "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS": "true",
+        "DB_TYPE": "{{setting.db}}"
+      },
+      "secrets": [
+        "N8N_ENCRYPTION_KEY"
+      ],
+      "data": [
+        "/home/node/.n8n"
+      ],
+      "data_uid": 1000,
+      "health": [
+        "wget",
+        "-q",
+        "-O",
+        "/dev/null",
+        "http://127.0.0.1:5678/healthz"
+      ],
+      "resources": {
+        "memory": "1Gi"
+      }
+    }
+  ],
+  "outputs": {
+    "url": "{{setting.url}}",
+    "host": "{{host}}",
+    "port": "{{port}}"
+  },
+  "notes": "Alone it keeps its data in SQLite; ziroctl stack up n8n runs it on PostgreSQL."
+}

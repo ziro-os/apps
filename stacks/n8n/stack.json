@@ -1,0 +1,31 @@
+{
+  "stack": "n8n",
+  "version": 1,
+  "description": "n8n workflow automation on PostgreSQL 18, on 127.0.0.1:5678",
+  "apps": {
+    "db": {
+      "app": "postgres:18",
+      "set": {
+        "database": "n8n",
+        "user": "n8n"
+      }
+    },
+    "web": {
+      "app": "n8n:2",
+      "publish": 5678,
+      "depends_on": [
+        "db"
+      ],
+      "links": {
+        "DB_POSTGRESDB_HOST": "db.host",
+        "DB_POSTGRESDB_PORT": "db.port",
+        "DB_POSTGRESDB_DATABASE": "db.database",
+        "DB_POSTGRESDB_USER": "db.user",
+        "DB_POSTGRESDB_PASSWORD": "db.password"
+      },
+      "set": {
+        "db": "postgresdb"
+      }
+    }
+  }
+}

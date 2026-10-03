@@ -1,0 +1,24 @@
+{
+  "stack": "umami",
+  "version": 1,
+  "description": "Umami web analytics on PostgreSQL 18, on 127.0.0.1:3000",
+  "apps": {
+    "db": {
+      "app": "postgres:18",
+      "set": {
+        "database": "umami",
+        "user": "umami"
+      }
+    },
+    "web": {
+      "app": "umami:3",
+      "publish": 3000,
+      "depends_on": [
+        "db"
+      ],
+      "links": {
+        "DATABASE_URL": "db.url"
+      }
+    }
+  }
+}

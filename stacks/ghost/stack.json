@@ -1,0 +1,27 @@
+{
+  "stack": "ghost",
+  "version": 1,
+  "description": "Ghost 6 with MySQL 8.4 on 127.0.0.1:2368",
+  "apps": {
+    "db": {
+      "app": "mysql:8.4",
+      "set": {
+        "database": "ghost",
+        "user": "ghost"
+      }
+    },
+    "web": {
+      "app": "ghost:6",
+      "publish": 2368,
+      "depends_on": [
+        "db"
+      ],
+      "links": {
+        "database__connection__host": "db.host",
+        "database__connection__user": "db.user",
+        "database__connection__password": "db.password",
+        "database__connection__database": "db.database"
+      }
+    }
+  }
+}

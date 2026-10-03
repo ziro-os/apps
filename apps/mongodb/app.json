@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "name": "mongodb",
+  "description": "MongoDB with a generated root password and persistent data",
+  "default": "8.0",
+  "versions": {
+    "8.0": {
+      "images": {
+        "db": "docker.io/library/mongo:8.0.32@sha256:d0d926f94df099bff534b7ee5b5986458131a22489dfff8664509af0c1e2ca9c"
+      }
+    },
+    "7.0": {
+      "images": {
+        "db": "docker.io/library/mongo:7.0.43@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b"
+      }
+    }
+  },
+  "settings": [
+    {
+      "name": "user",
+      "description": "root user created on first start",
+      "default": "root",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,31}$"
+    },
+    {
+      "name": "database",
+      "description": "database the connection URL opens",
+      "default": "app",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,63}$"
+    }
+  ],
+  "secrets": {
+    "MONGO_INITDB_ROOT_PASSWORD": "alnum:32"
+  },
+  "components": [
+    {
+      "name": "db",
+      "port": 27017,
+      "env": {
+        "MONGO_INITDB_ROOT_USERNAME": "{{setting.user}}"
+      },
+      "secrets": [
+        "MONGO_INITDB_ROOT_PASSWORD"
+      ],
+      "data": [
+        "/data/db"
+      ],
+      "health": [
+        "mongosh",
+        "--quiet",
+        "--eval",
+        "db.adminCommand('ping')"
+      ],
+      "resources": {
+        "memory": "1Gi"
+      }
+    }
+  ],
+  "outputs": {
+    "url": "mongodb://{{setting.user}}:{{secret.MONGO_INITDB_ROOT_PASSWORD}}@{{host}}:{{port}}/{{setting.database}}?authSource=admin",
+    "user": "{{setting.user}}",
+    "password": "{{secret.MONGO_INITDB_ROOT_PASSWORD}}",
+    "database": "{{setting.database}}",
+    "host": "{{host}}",
+    "port": "{{port}}"
+  }
+}
